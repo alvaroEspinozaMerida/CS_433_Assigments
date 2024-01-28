@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
     int size = 500;
 
     ReadyQueue q2;    // Ready Queue
-    PCBTable table(size);  // PCBTable of given size
+    PCBTable table(size);  // table of given size
 
     // Create initial 500 PCBs with random priorities, add them to the PCB table
     // Randomly choose to add half of the processes into the ready queue
