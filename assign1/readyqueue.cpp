@@ -6,19 +6,19 @@ using namespace std;
 //You must complete the all parts marked as "TODO". Delete "TODO" after you are done.
 // Remember to add sufficient comments to your code
 
+#include "pcb.h"
 
 /**
  * @brief Constructor for the ReadyQueue class.
  */
- ReadyQueue::ReadyQueue()  {
-     //TODO: add your code here
- }
+ReadyQueue::ReadyQueue(){
+}
 
 /**
  *@brief Destructor
 */
 ReadyQueue::~ReadyQueue() {
-    //TODO: add your code to release dynamically allocate memory
+
 }
 
 /**
@@ -29,6 +29,9 @@ ReadyQueue::~ReadyQueue() {
 void ReadyQueue::addPCB(PCB *pcbPtr) {
     //TODO: add your code here
     // When adding a PCB to the queue, you must change its state to READY.
+    pcbPtr->state = ProcState::READY;
+    mQueue->insert(pcbPtr);
+    mQueue->heapify();
 }
 
 /**
@@ -39,6 +42,9 @@ void ReadyQueue::addPCB(PCB *pcbPtr) {
 PCB* ReadyQueue::removePCB() {
     //TODO: add your code here
     // When removing a PCB from the queue, you must change its state to RUNNING.
+    T removed = mQueue->removeMax();
+    removed->state = ProcState::RUNNING;
+    return  removed;
 }
 
 /**
@@ -48,11 +54,12 @@ PCB* ReadyQueue::removePCB() {
  */
 int ReadyQueue::size() {
     //TODO: add your code here
+    return mQueue->size();
 }
 
 /**
  * @brief Display the PCBs in the queue.
  */
 void ReadyQueue::displayAll() {
-    //TODO: add your code here
+    cout<<mQueue->toString()<<endl;
 }

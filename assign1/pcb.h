@@ -76,6 +76,23 @@ public:
         return state;
     }
 
+    std::string getStateString(){
+
+        switch(state) {
+            case ProcState::NEW:
+                return "NEW";
+            case ProcState::READY:
+                return "READY";
+            case ProcState::RUNNING:
+                return "RUNNING";
+            case ProcState::WAITING:
+                return "WAITING";
+            case ProcState::TERMINATED:
+                return "TERMINATED";
+
+        }
+    }
+
     /**
      * @brief Change the state of the PCB.
      * @param state
@@ -90,6 +107,10 @@ public:
      */
     void setPriority(unsigned int priority) {
         this->priority = priority;
+    }
+
+    std::string string_display(){
+        return "ID:"+std::to_string(id)+", Priority:"+std::to_string(priority)+", State:"+ getStateString();
     }
 
 

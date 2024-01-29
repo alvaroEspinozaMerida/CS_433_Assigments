@@ -41,7 +41,6 @@ PCBTable::~PCBTable() {
  * @return PCB*: pointer to the PCB at index "idx"
  */
 PCB* PCBTable::getPCB(unsigned int idx) {
-    // TODO: add your code here
     return table.at(idx);
 }
 
@@ -60,6 +59,5 @@ void PCBTable::displayTable() {
     for (const PCB* i : table) {
         i->display();
     }
-
 
 }
