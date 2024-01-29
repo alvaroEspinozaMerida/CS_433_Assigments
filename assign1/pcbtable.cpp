@@ -30,6 +30,10 @@ PCBTable::~PCBTable() {
    // TODO: add your code here
    // Delete all the PCBs in the table
 
+    for (auto ptr : table) {
+        delete ptr;
+    }
+
     std::destroy(table.begin(), table.end());
 
 }
