@@ -1,12 +1,13 @@
 #include <iostream>
 #include "readyqueue.h"
+#include "pcb.h"
+#include "heap.h"
 
 using namespace std;
 
 //You must complete the all parts marked as "TODO". Delete "TODO" after you are done.
 // Remember to add sufficient comments to your code
 
-#include "pcb.h"
 
 /**
  * @brief Constructor for the ReadyQueue class.
@@ -31,7 +32,6 @@ void ReadyQueue::addPCB(PCB *pcbPtr) {
     // When adding a PCB to the queue, you must change its state to READY.
     pcbPtr->state = ProcState::READY;
     mQueue->insert(pcbPtr);
-    mQueue->heapify();
 }
 
 /**
