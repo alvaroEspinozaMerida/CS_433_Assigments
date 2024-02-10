@@ -4,7 +4,6 @@
 
 using namespace std;
 
-//You must complete the all parts marked as "TODO". Delete "TODO" after you are done.
 // Remember to add sufficient comments to your code
 
 
@@ -95,6 +94,8 @@ void Heap::heapify() {
 
 /**
  * @brief  Runs percolate down on the heap for the node stored in index.
+ * This function has been update so that instead of using an int node the function
+ * uses a PCB node and the perconlate down is based on the priority of the PCB
  */
 void Heap::percolateDown(int index) {
 
