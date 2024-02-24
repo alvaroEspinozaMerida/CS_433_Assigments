@@ -29,8 +29,23 @@ using namespace std;
  * @return int
  */
 int parse_command(char command[], char *args[])
-{
-    // TODO: implement this function
+{   
+    // Get pointer to the first token parsed by strtok
+    char *token = strtok(command, " "); // Second param are delimiters for parsing tokens
+    int i = 0;
+
+    // Loop through each token produced by the function 
+    while (token != NULL) {
+        // Add token produced by strtok to args array, increment # tokens
+        args[i] = token;
+        i++;
+
+        // According to cppreference: Subsequent calls to strtok require a null pointer in order to continue where the first call left off. 
+        token = strtok(NULL, " ");
+    }
+
+    // Return total num of tokens
+    return i;
 }
 
 // TODO: Add additional functions if you need
