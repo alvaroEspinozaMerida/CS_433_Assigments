@@ -31,6 +31,7 @@ using namespace std;
 int parse_command(char command[], char *args[])
 {   
     // Get pointer to the first token parsed by strtok
+
     char *token = strtok(command, " "); // Second param are delimiters for parsing tokens
     int i = 0;
 
@@ -43,6 +44,8 @@ int parse_command(char command[], char *args[])
         // According to cppreference: Subsequent calls to strtok require a null pointer in order to continue where the first call left off. 
         token = strtok(NULL, " ");
     }
+
+    args[i] = NULL;
 
     // Return total num of tokens
     return i;
@@ -61,17 +64,54 @@ int main(int argc, char *argv[])
     char command[MAX_LINE];       // the command that was entered
     char *args[MAX_LINE / 2 + 1]; // hold parsed out command line arguments
     int should_run = 1;           /* flag to determine when to exit program */
+    int num_args = 0 ;
 
-    // TODO: Add additional variables for the implementation.
 
     while (should_run)
     {
         printf("osh>");
         fflush(stdout);
         // Read the input command
-        fgets(command, MAX_LINE, stdin);
-        // Parse the input command
-        int num_args = parse_command(command, args);
+        if (fgets(command, MAX_LINE, stdin) != NULL) {
+            size_t len = strlen(command);
+            if (len > 0 && command[len - 1] == '\n') {
+                command[len - 1] = '\0';
+            }
+        }
+
+        if(strcmp(command, "!!") != 0 ){
+            num_args = parse_command(command, args);
+        }
+        else if(strcmp(command, "!!") == 0 and num_args == 0){
+            cout<<"No commands in history"<<endl;
+        }
+
+
+
+//        CHILD PROCESS STARTS HERE
+        int id = fork();
+
+        if(id == 0){
+            cout<<"Command:"<<args[0]<<endl;
+            cout<<"Args:"<<args[1]<<endl;
+
+
+            if (args[2] == NULL){
+                cout<<"list is null at end"<<endl;
+            }
+
+
+            if (execvp(args[0], args) == -1) {
+                perror("execvp");
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        if(id != 0 && args[num_args - 1] != "&"){
+            wait(NULL);
+        }
+
+
 
         // TODO: Add your code for the implementation
         /**
