@@ -71,7 +71,8 @@ int main(int argc, char *argv[])
     {
         printf("osh>");
         fflush(stdout);
-        // Read the input command
+        // Read the input command and get rid of the new line character generated when
+        // the enter gets pressed by the user
         if (fgets(command, MAX_LINE, stdin) != NULL) {
             size_t len = strlen(command);
             if (len > 0 && command[len - 1] == '\n') {
@@ -86,40 +87,41 @@ int main(int argc, char *argv[])
             cout<<"No commands in history"<<endl;
         }
 
-
-
 //        CHILD PROCESS STARTS HERE
         int id = fork();
 
         if(id == 0){
-            cout<<"Command:"<<args[0]<<endl;
-            cout<<"Args:"<<args[1]<<endl;
 
-
-            if (args[2] == NULL){
-                cout<<"list is null at end"<<endl;
-            }
-
+//            TODO: ADD a funtion that is able to extract out the < or > operators to that the comamand can pass in the right arguments
 
             if (execvp(args[0], args) == -1) {
                 perror("execvp");
                 exit(EXIT_FAILURE);
             }
+
+            if(strcmp(args[1], ">") == 0){
+
+
+                int file_descriptor = open(args[2],O_WRONLY | O_TRUNC | O_CREAT);
+
+                if(file_descriptor < 0){
+                    perror("open");
+                    exit(EXIT_FAILURE);
+                }
+
+                if(dup2(file_descriptor,STDOUT_FILENO) < 0 ){
+                    perror("dup2");
+                    exit(EXIT_FAILURE);
+                }
+
+            }
+
         }
 
         if(id != 0 && args[num_args - 1] != "&"){
             wait(NULL);
         }
 
-
-
-        // TODO: Add your code for the implementation
-        /**
-         * After reading user input, the steps are:
-         * (1) fork a child process using fork()
-         * (2) the child process will invoke execvp()
-         * (3) parent will invoke wait() unless command included &
-         */
     }
     return 0;
 }
