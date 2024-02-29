@@ -21,8 +21,6 @@ using namespace std;
 
 #define MAX_LINE 80 // The maximum length command
 
-
-
 /**
  * @brief parse out the command and arguments from the input command separated by spaces
  *
@@ -30,7 +28,7 @@ using namespace std;
  * @param args
  * @return int
  */
-int parse_command(char command[], char *args[], int &readWrite)
+int parse_command(char command[], char *args[], int &readWrite, int &concurrent)
 {
 
     //USED TO CHECK IF THE COMMAND HAS < or > operator
@@ -38,17 +36,27 @@ int parse_command(char command[], char *args[], int &readWrite)
 
     //three states for wheter we are reading,writing, or none from a file
     //WRITING STATE
-    if (commandStr.find(">") != std::string::npos)  {
+    if (commandStr.find('>') != std::string::npos)  {
         readWrite = 1;
     }
     //READING STATE
-    else if (commandStr.find("<") != std::string::npos ){
+    else if (commandStr.find('<') != std::string::npos ){
         readWrite = 2;
     }
 
     else {
        readWrite = 0;
     }
+
+    if (commandStr.find('&') != std::string::npos ){
+        concurrent = 1;
+    }
+
+    else {
+        concurrent = 0;
+    }
+
+
 
     char *token = strtok(command, " <>"); // Second param are delimiters for parsing tokens
     int i = 0;
@@ -60,7 +68,7 @@ int parse_command(char command[], char *args[], int &readWrite)
         args[i] = token;
         i++;
         // According to cppreference: Subsequent calls to strtok require a null pointer in order to continue where the first call left off.
-        token = strtok(NULL, " <>");
+        token = strtok(NULL, " <>&");
     }
 
     args[i] = NULL;
@@ -89,7 +97,12 @@ int main(int argc, char *argv[])
 
     int readWrite = 0;
 
+    int concurrent = 0;
+
     int file_descriptor;
+
+    char previous[MAX_LINE];
+
 
 
     while (should_run){
@@ -112,14 +125,21 @@ int main(int argc, char *argv[])
 
         //if we do not need to use historical commands then we can parse our the command like normal
         //and extract each argument
+        if(strcmp(input, "exit") == 0 ){
+            break;
+        }
+
+
+
         if(strcmp(input, "!!") != 0 ){
 
 
+            strcpy(previous,input);
             //TODO: update the parse function so that it extracts
             //out each one of the tokens based on space
             // if there exist the < or > we need handle this special
             // case so that it extracts everything before and after the < and >
-            num_args = parse_command(command, args,readWrite);
+            num_args = parse_command(command, args,readWrite,concurrent);
 
             //if we have an arrow this is a special case for the input
             // what needs to happen is we need to extract out the txt
@@ -131,7 +151,11 @@ int main(int argc, char *argv[])
 
         }
         else if(strcmp(command, "!!") == 0 and num_args == 0){
-            cout<<"No commands in history"<<endl;
+            cout<<"No command history found."<<endl;
+        }
+        else if(strcmp(command, "!!") == 0 ){
+            cout<<previous<<endl;
+            num_args = parse_command(previous, args,readWrite,concurrent);
         }
 
 //        CHILD PROCESS STARTS HERE
@@ -140,12 +164,10 @@ int main(int argc, char *argv[])
         if(id == 0){
             if( readWrite == 1 or readWrite == 2){
 
-//                cout<<"File name:"<<args[num_args-1]<<endl;
-
                 fileName = args[num_args-1];
 
                 strcpy(fileName,args[num_args-1]);
-                cout<<"File name:"<<fileName<<endl;
+//                cout<<"File name:"<<fileName<<endl;
 
                 if(readWrite == 1){
                     file_descriptor = open(fileName, O_WRONLY | O_CREAT | O_TRUNC);
@@ -175,23 +197,14 @@ int main(int argc, char *argv[])
                         exit(EXIT_FAILURE);
                     }
                 }
-                else{
-
+                else if (readWrite == 2){
 
                     if(dup2(file_descriptor,STDIN_FILENO) < 0 ){
                         perror("dup2");
                         close(file_descriptor);
                         exit(EXIT_FAILURE);
                     }
-//                    num_args+=1;
-//                    args[num_args-1] = fileName;
-//                    for (int i = 0; i < num_args; ++i) {
-//                        std::cout << "args[" << i << "]: " << args[i] << std::endl;
-//                    }
-//
-//                    close(file_descriptor);
                     close(file_descriptor);
-
                 }
 
             }
@@ -199,20 +212,23 @@ int main(int argc, char *argv[])
             fflush(stdout);
 
             if (execvp(args[0], args) == -1) {
-                perror("execvp");
-                exit(EXIT_FAILURE);
+                cout<<"Command not found"<<endl;
             }
+
             if(readWrite != 2){
                 close(file_descriptor);
             }
 
 
         }
-
-//        if(id != 0 && args[num_args - 1] != "&"){
-            wait(NULL);
-//        }
-
+        else if (id > 0) {
+            if(concurrent != 1){
+                wait(NULL);
+            }
+        }
+        else{
+            std::cout << "Fork failed" << std::endl;
+        }
 
 
     }
