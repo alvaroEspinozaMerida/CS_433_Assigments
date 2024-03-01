@@ -2,7 +2,7 @@
 /**
  * Assignment 2: Simple UNIX Shell
  * @file pcbtable.h
- * @author ??? (TODO: your name)
+ * @author Alvaro E. Merida, Lucas Birkenstock
  * @brief This is the main function of a simple UNIX Shell. You may add additional functions in this file for your implementation
  * @version 0.1
  */
@@ -58,7 +58,7 @@ int parse_command(char command[], char *args[], int &readWrite, int &concurrent)
 
 
 
-    char *token = strtok(command, " <>"); // Second param are delimiters for parsing tokens
+    char *token = strtok(command, " <>|"); // Second param are delimiters for parsing tokens
     int i = 0;
 
 
@@ -68,7 +68,7 @@ int parse_command(char command[], char *args[], int &readWrite, int &concurrent)
         args[i] = token;
         i++;
         // According to cppreference: Subsequent calls to strtok require a null pointer in order to continue where the first call left off.
-        token = strtok(NULL, " <>&");
+        token = strtok(NULL, " <>&|");
     }
 
     args[i] = NULL;
@@ -94,23 +94,22 @@ int main(int argc, char *argv[])
     int num_args = 0 ;
 
     char *fileName;
-
     int readWrite = 0;
-
     int concurrent = 0;
-
     int file_descriptor;
 
+    // For storing previous command when !! is entered
     char previous[MAX_LINE];
 
 
 
-    while (should_run){
+    while (should_run) {
 
+        // Prompt input
         printf("osh>");
         fflush(stdout);
-        // Read the input command and get rid of the new line character generated when
-        // the enter gets pressed by the user
+
+        // Read user input and replace newline char with null terminator (if present). 
         if (fgets(input, MAX_LINE, stdin) != NULL) {
             size_t len = strlen(input);
             if (len > 0 && input[len - 1] == '\n') {
@@ -118,88 +117,79 @@ int main(int argc, char *argv[])
             }
         }
 
-        //Makes a copy of the input so we can have an original copy of the line so
-        //that when the command is extracted the orginal line remains
+        // Make a duplicate of user command input, so we can manipulate it without altering the original command. 
         strcpy(command,input);
 
 
-        //if we do not need to use historical commands then we can parse our the command like normal
-        //and extract each argument
-        if(strcmp(input, "exit") == 0 ){
+        // Break loop and terminate if user input is "exit"
+        if(strcmp(input, "exit") == 0 ) {
             break;
         }
 
 
+        // If input is not "!!": 
+        if(strcmp(input, "!!") != 0 ) {
 
-        if(strcmp(input, "!!") != 0 ){
-
-
+            // Make copy of previously executed command for manipulation
             strcpy(previous,input);
-            //TODO: update the parse function so that it extracts
-            //out each one of the tokens based on space
-            // if there exist the < or > we need handle this special
-            // case so that it extracts everything before and after the < and >
-            num_args = parse_command(command, args,readWrite,concurrent);
 
-            //if we have an arrow this is a special case for the input
-            // what needs to happen is we need to extract out the txt
-            //file that exist in the command
-            //however we cannot assume that the > or < will always be
-            //the second argument of the args list as some
-            //linux commands vary in size ex : ls and ls -l
-            //what needs to happen is we need extract everything up to > < and after those values
+            // Get number of command arguments by parsing the command. Function returns # commands. 
+            num_args = parse_command(command, args, readWrite, concurrent);
 
-        }
-        else if(strcmp(command, "!!") == 0 and num_args == 0){
+        } else if (strcmp(command, "!!") == 0 and num_args == 0) {
+            // If user command is "!!" and num_args is zero, print error. Num_args will be zero if parse_command is never called, meaning there is no previously entered command.
             cout<<"No command history found."<<endl;
-        }
-        else if(strcmp(command, "!!") == 0 ){
-            cout<<previous<<endl;
-            num_args = parse_command(previous, args,readWrite,concurrent);
+        } else if (strcmp(command, "!!") == 0 ) {
+            // If user enters !!, print previous command to console, and update num_args
+            cout << previous << endl;
+            num_args = parse_command(previous, args, readWrite, concurrent);
         }
 
 //        CHILD PROCESS STARTS HERE
         int id = fork();
 
-        if(id == 0){
-            if( readWrite == 1 or readWrite == 2){
-
-                fileName = args[num_args-1];
-
+        // pid = 0 means code is executed in the child process
+        if(id == 0) {
+            // If reading or writing: 
+            if( readWrite == 1 or readWrite == 2) {
+                // Extract filename from argument array
+                // fileName = args[num_args-1]; // Redundant? 
                 strcpy(fileName,args[num_args-1]);
-//                cout<<"File name:"<<fileName<<endl;
 
+                // If writing state:
                 if(readWrite == 1){
+                    // Open file to be written to. Create new file if it doesn't exist. Truncate file to length = 0 if it already exists. 
                     file_descriptor = open(fileName, O_WRONLY | O_CREAT | O_TRUNC);
                 }
-                else{
+                else {
+                    // If in reading state
                     cout<<"READ IS BEING ACTIVATED"<<endl;
+                    // Open file for reading 
                     file_descriptor = open(fileName, O_RDONLY);
                 }
 
+                // Filename was num_args-1. Now that it is handled, set that arg to NULL and decrement the number of arguments. 
                 args[num_args-1] = NULL;
                 num_args = num_args - 1;
 
-//                for (int i = 0; i < num_args; ++i) {
-//                    std::cout << "args[" << i << "]: " << args[i] << std::endl;
-//                }
-                //IF file is not open correctly error is handled here
-
-                if(file_descriptor < 0){
+                // Print errors if unable to read
+                if(file_descriptor < 0) {
                     perror("open");
                     exit(EXIT_FAILURE);
                 }
 
-                //since we already checked abouve for it being either 1 or 2 it just has to check for 1 here
-                if(readWrite == 1){
-                    if(dup2(file_descriptor,STDOUT_FILENO) < 0 ){
+                // If in write state:
+                if(readWrite == 1) {
+                    // Redirect stdout to file_descriptor
+                    if(dup2(file_descriptor,STDOUT_FILENO) < 0 ) {
+                        // Print error if unsuccessful. 
                         perror("dup2");
                         exit(EXIT_FAILURE);
                     }
-                }
-                else if (readWrite == 2){
+                // If reading state: 
+                } else if (readWrite == 2){
 
-                    if(dup2(file_descriptor,STDIN_FILENO) < 0 ){
+                    if(dup2(file_descriptor,STDIN_FILENO) < 0 ) {
                         perror("dup2");
                         close(file_descriptor);
                         exit(EXIT_FAILURE);
@@ -225,8 +215,7 @@ int main(int argc, char *argv[])
             if(concurrent != 1){
                 wait(NULL);
             }
-        }
-        else{
+        } else{
             std::cout << "Fork failed" << std::endl;
         }
 
