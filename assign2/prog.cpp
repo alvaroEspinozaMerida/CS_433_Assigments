@@ -2,7 +2,7 @@
 /**
  * Assignment 2: Simple UNIX Shell
  * @file pcbtable.h
- * @author Alvaro E. Merida, Lucas Birkenstock
+ * @author ??? (TODO: your name)
  * @brief This is the main function of a simple UNIX Shell. You may add additional functions in this file for your implementation
  * @version 0.1
  */
@@ -58,7 +58,7 @@ int parse_command(char command[], char *args[], int &readWrite, int &concurrent)
 
 
 
-    char *token = strtok(command, " <>|"); // Second param are delimiters for parsing tokens
+    char *token = strtok(command, " <>"); // Second param are delimiters for parsing tokens
     int i = 0;
 
 
@@ -68,7 +68,7 @@ int parse_command(char command[], char *args[], int &readWrite, int &concurrent)
         args[i] = token;
         i++;
         // According to cppreference: Subsequent calls to strtok require a null pointer in order to continue where the first call left off.
-        token = strtok(NULL, " <>&|");
+        token = strtok(NULL, " <>&");
     }
 
     args[i] = NULL;
@@ -97,15 +97,12 @@ int main(int argc, char *argv[])
     int readWrite = 0;
     int concurrent = 0;
     int file_descriptor;
-
-    // For storing previous command when !! is entered
     char previous[MAX_LINE];
 
 
 
-    while (should_run) {
+    while (should_run){
 
-        // Prompt input
         printf("osh>");
         fflush(stdout);
 
@@ -122,39 +119,43 @@ int main(int argc, char *argv[])
 
 
         // Break loop and terminate if user input is "exit"
-        if(strcmp(input, "exit") == 0 ) {
+        if(strcmp(input, "exit") == 0 ){
             break;
         }
 
 
-        // If input is not "!!": 
-        if(strcmp(input, "!!") != 0 ) {
+        // If input is not "!!":
+        if(strcmp(input, "!!") != 0 ){
 
             // Make copy of previously executed command for manipulation
             strcpy(previous,input);
-
             // Get number of command arguments by parsing the command. Function returns # commands. 
-            num_args = parse_command(command, args, readWrite, concurrent);
+            num_args = parse_command(command, args,readWrite,concurrent);
 
-        } else if (strcmp(command, "!!") == 0 and num_args == 0) {
+        }
+        else if(strcmp(command, "!!") == 0 and num_args == 0){
             // If user command is "!!" and num_args is zero, print error. Num_args will be zero if parse_command is never called, meaning there is no previously entered command.
             cout<<"No command history found."<<endl;
-        } else if (strcmp(command, "!!") == 0 ) {
+        }
+        else if(strcmp(command, "!!") == 0 ){
             // If user enters !!, print previous command to console, and update num_args
-            cout << previous << endl;
-            num_args = parse_command(previous, args, readWrite, concurrent);
+
+            cout<<previous<<endl;
+            num_args = parse_command(previous, args,readWrite,concurrent);
         }
 
 //        CHILD PROCESS STARTS HERE
         int id = fork();
 
-        // pid = 0 means code is executed in the child process
-        if(id == 0) {
+        // Pid = 0 means code is executed in the child process
+        if(id == 0){
             // If reading or writing: 
-            if( readWrite == 1 or readWrite == 2) {
-                // Extract filename from argument array
-                // fileName = args[num_args-1]; // Redundant? 
+            if( readWrite == 1 or readWrite == 2){
+                // Extract filename from the array
+                // Redundant? 
+                fileName = args[num_args-1];
                 strcpy(fileName,args[num_args-1]);
+
 
                 // If writing state:
                 if(readWrite == 1){
@@ -173,23 +174,24 @@ int main(int argc, char *argv[])
                 num_args = num_args - 1;
 
                 // Print errors if unable to read
-                if(file_descriptor < 0) {
+                if(file_descriptor < 0){
                     perror("open");
                     exit(EXIT_FAILURE);
                 }
 
                 // If in write state:
                 if(readWrite == 1) {
-                    // Redirect stdout to file_descriptor
-                    if(dup2(file_descriptor,STDOUT_FILENO) < 0 ) {
-                        // Print error if unsuccessful. 
+                    // Redirect stdout to file_descriptor 
+                    if(dup2(file_descriptor,STDOUT_FILENO) < 0 ){
+                        // Print errors if failure 
                         perror("dup2");
                         exit(EXIT_FAILURE);
                     }
-                // If reading state: 
-                } else if (readWrite == 2){
+                }
+                // If in reading state
+                else if (readWrite == 2){
 
-                    if(dup2(file_descriptor,STDIN_FILENO) < 0 ) {
+                    if(dup2(file_descriptor,STDIN_FILENO) < 0 ){
                         // Print errors if unable to read
                         perror("dup2");
                         close(file_descriptor);
@@ -205,8 +207,7 @@ int main(int argc, char *argv[])
 
             // Execute command specified by args array
             if (execvp(args[0], args) == -1) {
-                // If it fails, print error
-                cout << "Command not found" << endl;
+                cout<<"Command not found"<<endl;
             }
 
             // Close file descriptor if not in reading state
@@ -214,16 +215,19 @@ int main(int argc, char *argv[])
                 close(file_descriptor);
             }
 
+
+        }
         // Handling parent process
         // If child was successfully created:
-        } else if (id > 0) {
+        else if (id > 0) {
             // If concurrent execution is not requested:
             if(concurrent != 1){
                 // Wait for the child process to finish
                 wait(NULL);
             }
-            // If fork fails: 
-        } else {
+        }
+        // If fork fails: 
+        else {
             std::cout << "Fork failed" << std::endl;
         }
 
