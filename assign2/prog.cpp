@@ -190,10 +190,12 @@ int main(int argc, char *argv[])
                 } else if (readWrite == 2){
 
                     if(dup2(file_descriptor,STDIN_FILENO) < 0 ) {
+                        // Print errors if unable to read
                         perror("dup2");
                         close(file_descriptor);
                         exit(EXIT_FAILURE);
                     }
+                    // Close connection after redirection
                     close(file_descriptor);
                 }
 
@@ -201,21 +203,27 @@ int main(int argc, char *argv[])
 
             fflush(stdout);
 
+            // Execute command specified by args array
             if (execvp(args[0], args) == -1) {
-                cout<<"Command not found"<<endl;
+                // If it fails, print error
+                cout << "Command not found" << endl;
             }
 
+            // Close file descriptor if not in reading state
             if(readWrite != 2){
                 close(file_descriptor);
             }
 
-
-        }
-        else if (id > 0) {
+        // Handling parent process
+        // If child was successfully created:
+        } else if (id > 0) {
+            // If concurrent execution is not requested:
             if(concurrent != 1){
+                // Wait for the child process to finish
                 wait(NULL);
             }
-        } else{
+            // If fork fails: 
+        } else {
             std::cout << "Fork failed" << std::endl;
         }
 
