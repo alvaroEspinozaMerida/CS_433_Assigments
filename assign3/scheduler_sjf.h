@@ -15,7 +15,12 @@
 
 class SchedulerSJF : public Scheduler {
 private:
-    // TODO: add necessary member variables here for your implementation
+
+    vector<PCB> process_list;
+    double tTime;
+    double wTime;
+
+
 
 public:
     /**
