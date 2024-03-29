@@ -16,7 +16,6 @@ all : $(PROG)
 
 fcfs: scheduler_fcfs.o driver_fcfs.o
 	$(CC) -o fcfs scheduler_fcfs.o driver_fcfs.o $(LDFLAGS) $(LIB)
-
 rr: scheduler_rr.o driver_rr.o
 	$(CC) -o rr scheduler_rr.o driver_rr.o $(LDFLAGS) $(LIB)
 

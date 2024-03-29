@@ -16,6 +16,12 @@
 class SchedulerRR : public Scheduler {
 private:
     // TODO: add necessary member variables here for your implementation
+    vector<PCB> process_list;
+    vector<PCB> wait_queue;
+    double tTime;
+    double wTime;
+    int time_quantum;
+
 
 public:
     /**
