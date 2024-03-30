@@ -57,53 +57,53 @@ void SchedulerRR::simulate() {
     //if we erase them from the wait queue the data from the original queue and the wait queue will be
     //desynced as they will be different sizes
 
-    while(check_time(this->wait_queue ) && count < 145){
+    while(check_time(this->wait_queue )){
 
-        PCB& pcb = this->wait_queue[current];
+        PCB* pcb = &this->wait_queue[current];
 
-        cout<<"\nPROCESS BEFORE CHECK!"<<endl;
-        cout<<"BEFORE Process "<< pcb.name <<" with  "<<pcb.burst_time<<" time units"<< endl;
+//        cout<<"\nPROCESS BEFORE CHECK!"<<endl;
+//        cout<<"BEFORE Process "<< pcb->name <<" with  "<<pcb->burst_time<<" time units"<< endl;
 
         //checks if we are at the end of the scheduler
         //get the current process
 
         //if the process has no current burst move onto the next part
-        while(pcb.burst_time == 0){
+        while(pcb->burst_time == 0){
             current += 1;
             if(current > this->wait_queue.size()-1){
                 current = 0;
             }
-            pcb = this->wait_queue[current];
+            pcb = &this->wait_queue[current];
         }
 
-        cout<<"PROCESS AFTER CHECK!"<<endl;
-        cout<<"AFTER Process "<< pcb.name <<" with  "<<pcb.burst_time<<" time units"<< endl;
+//        cout<<"PROCESS AFTER CHECK!"<<endl;
+//        cout<<"AFTER Process "<< pcb->name <<" with  "<<pcb->burst_time<<" time units"<< endl;
 
 
 
         //subtract the time quantum as long as burstime is greter
         //else this implies that the burst time needs to be reduced by the remaining amount of time
-        if (this->time_quantum <= pcb.burst_time){
-            cout<<"i:"<<count<<"|Running Process "<< pcb.name <<" for "<<this->time_quantum<<" time units"<< endl;
+        if (this->time_quantum <= pcb->burst_time){
+            cout<<"i:"<<count<<"|Running Process "<< pcb->name <<" for "<<this->time_quantum<<" time units"<< endl;
 
-            pcb.burst_time -= this->time_quantum;
+            pcb->burst_time -= this->time_quantum;
 
             waitTime +=  this->time_quantum;
         }
         else{
-            cout<<"i:"<<count<<"|Running Process "<< pcb.name <<" for "<<pcb.burst_time<<" time units"<< endl;
-            waitTime += pcb.burst_time;
-            pcb.burst_time = 0 ;
+            cout<<"i:"<<count<<"|Running Process "<< pcb->name <<" for "<<pcb->burst_time<<" time units"<< endl;
+            waitTime += pcb->burst_time;
+            pcb->burst_time = 0 ;
 
         }
 
 
-        cout<<"PROCESS AFTER RUNNING!"<<endl;
-        cout<<"AFTER RUNNING Process "<< pcb.name <<" BURST time left :  "<<pcb.burst_time<<" time units"<< endl;
+//        cout<<"PROCESS AFTER RUNNING!"<<endl;
+//        cout<<"AFTER RUNNING Process "<< pcb->name <<" BURST time left :  "<<pcb->burst_time<<" time units"<< endl;
 
-        if(pcb.burst_time == 0){
-            cout<<"PROCESS COMPLETE!"<<endl;
-            cout<<"Completed Process "<< pcb.name <<" with  "<<pcb.burst_time<<" time units"<< endl;
+        if(pcb->burst_time == 0){
+//            cout<<"PROCESS COMPLETE!"<<endl;
+//            cout<<"Completed Process "<< pcb->name <<" with  "<<pcb->burst_time<<" time units"<< endl;
 
         }
 
@@ -112,10 +112,10 @@ void SchedulerRR::simulate() {
         current += 1;
 
         //For some reason process T6 is getting replaced at i 133
-        cout<<"Process List:"<<endl;
-        for(PCB pcb : this->wait_queue){
-            cout<<"|PCB "<< pcb.name <<" : "<<pcb.burst_time<<" time units"<< endl;
-        }
+//        cout<<"Process List:"<<endl;
+//        for(PCB pcb : this->wait_queue){
+//            cout<<"|PCB "<< pcb.name <<" : "<<pcb.burst_time<<" time units"<< endl;
+//        }
 
 
 
@@ -124,7 +124,7 @@ void SchedulerRR::simulate() {
             current = 0;
         }
 
-        cout<<"NEXT CURRENT:"<<current<< endl;
+//        cout<<"NEXT CURRENT:"<<current<< endl;
 
 
 
