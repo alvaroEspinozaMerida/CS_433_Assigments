@@ -105,6 +105,12 @@ void SchedulerRR::simulate() {
 //            cout<<"PROCESS COMPLETE!"<<endl;
 //            cout<<"Completed Process "<< pcb->name <<" with  "<<pcb->burst_time<<" time units"<< endl;
 
+//            PCB& final_data = this->process_list[current];
+            PCB* final_data = &this->process_list[current];
+
+            final_data->arrival_time = waitTime - final_data->burst_time;
+            final_data->burst_time = waitTime;
+
         }
 
 
@@ -125,25 +131,6 @@ void SchedulerRR::simulate() {
         }
 
 //        cout<<"NEXT CURRENT:"<<current<< endl;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
