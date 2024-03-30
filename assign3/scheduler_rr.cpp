@@ -19,6 +19,8 @@
 
 SchedulerRR :: SchedulerRR(int time_quantum) {
     this->time_quantum = time_quantum;
+    this->tTime = 0;
+    this->wTime = 0;
 }
 
 SchedulerRR :: ~SchedulerRR(){

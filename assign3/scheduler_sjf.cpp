@@ -9,13 +9,15 @@
 // Remember to add sufficient and clear comments to your code
 
 #include "scheduler_sjf.h"
+#include <algorithm>
 
 // TODO: add implementation of SchedulerSJF constructor, destrcutor and 
 // member functions init, print_results, and simulate here
 
 
 SchedulerSJF :: SchedulerSJF() {
-
+    this->tTime = 0;
+    this->wTime = 0;
 }
 
 SchedulerSJF :: ~SchedulerSJF(){
