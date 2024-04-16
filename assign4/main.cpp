@@ -1,7 +1,7 @@
 /**
 * Assignment 4: Producer Consumer Problem
  * @file main.cpp
- * @author ??? (TODO: your name)
+ * @author Alvaro Espinoza Merida and Rutilo Maciel
  * @brief The main program for the producer consumer problem.
  * @version 0.1
  */
@@ -10,6 +10,7 @@
 #include <iostream>
 #include "buffer.h"
 #include <unistd.h>
+#include <thread>
 
 using namespace std;
 
@@ -55,11 +56,34 @@ void *consumer(void *param) {
 }
 
 int main(int argc, char *argv[]) {
-    /* TODO: 1. Get command line arguments argv[1],argv[2],argv[3] */
-    /* TODO: 2. Initialize buffer and synchronization primitives */
-    /* TODO: 3. Create producer thread(s).
-     * You should pass an unique int ID to each producer thread, starting from 1 to number of threads */
-    /* TODO: 4. Create consumer thread(s) */
-    /* TODO: 5. Main thread sleep */
-    /* TODO: 6. Exit */
+    if (argc != 4) {
+        cerr << "Usage: " << argv[0] << " <sleep time> <# of producers> <# of consumers" << endl;
+    }
+
+    int sleep_time = atoi(argv[1]);
+    int num_producers = atoi(argv[2]);
+    int num_consumers = atoi(argv[3]);
+
+    vector<thread> producer_threads;
+    vector<thread> consumer_threads;
+
+    srand(time(NULL));
+
+    for (int i = 1; i <= num_producers; i++) {
+        producer_threads.emplace_back(producer, &i);
+    }
+
+    for (int i = 1; i <= num_consumers; i++) {
+        consumer_threads.emplace_back(consumer, nullptr);
+    }
+
+    sleep(sleep_time);
+
+    for (int i = 0; i < producer_threads.size(); i++) {
+        producer_threads[i].detach();
+    }
+
+    for(int i = 0; i < consumer_threads.size(); i++) {
+        consumer_threads[i].detach();
+    }
 }

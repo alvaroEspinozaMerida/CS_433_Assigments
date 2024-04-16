@@ -1,13 +1,17 @@
 /**
 * Assignment 4: Producer Consumer Problem
  * @file buffer.h
- * @author ??? (TODO: your name)
+ * @author Alvaro Espinoza Merida and Rutilo Maciel
  * @brief header file for the buffer class
  * @version 0.1
  */
 
 #ifndef ASSIGN4_BUFFER_H
 #define ASSIGN4_BUFFER_H
+
+#include <vector>
+#include <mutex>
+#include <condition_variable>
 
 // Define the data type of the buffer items
 typedef int buffer_item;
@@ -17,14 +21,18 @@ typedef int buffer_item;
  */
 class Buffer {
 private:
-    // TODO: Add your implementation of the buffer class here
+    std::vector<buffer_item> buffer;
+    int size;
+    std::mutex mtx;
+    std::condition_variable not_full;
+    std::condition_variable not_empty;
 
 public:
     /**
      * @brief Construct a new Buffer object
      * @param size the size of the buffer
      */
-    Buffer(int size = 5);
+    Buffer(int size = 5) : size(size) {};
 
     /**
      * @brief Destroy the Buffer object
