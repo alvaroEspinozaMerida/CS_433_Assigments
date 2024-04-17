@@ -9,29 +9,66 @@
 // You must complete the all parts marked as "TODO". Delete "TODO" after you are done.
 // Remember to add sufficient and clear comments to your code
 #include "buffer.h"
+#include <semaphore.h>
+#include <pthread.h>
 #include <iostream>
 using namespace std;
 
-Buffer::~Buffer() {}
+Buffer::~Buffer() {
+
+    sem_close(full);
+    sem_unlink("/full");
+    sem_close(empty);
+    sem_unlink("/empty");
+
+
+    delete[] buffer;                 // Free the allocated buffer
+    pthread_mutex_destroy(&lock);
+
+
+}
 
 bool Buffer::insert_item(buffer_item item) {
-    unique_lock<mutex> lock(mtx);
-    if (buffer.size() >= size) {
-        not_full.wait(lock, [this]() {return buffer.size() < size; });
+
+    pthread_mutex_lock(&lock);
+
+    if(count == size - 1){
+        pthread_mutex_unlock(&lock);
+        return false;
     }
-    buffer.push_back(item);
-    not_empty.notify_all();
+
+    buffer[in] = item;
+
+    in = (in + 1) % size;
+
+    count ++;
+
+
+    pthread_mutex_unlock(&lock);
+
     return true;
 }
 
 bool Buffer::remove_item(buffer_item *item) {
-    unique_lock<mutex> lock(mtx);
-    if (buffer.empty()) {
-        not_empty.wait(lock, [this]() {return !buffer.empty();});
+
+    pthread_mutex_lock(&lock);
+
+    if(count == 0){
+        pthread_mutex_unlock(&lock);
+        return false;
     }
-    *item = buffer.front();
-    buffer.erase(buffer.begin());
-    not_full.notify_all();
+
+
+    *item = buffer[out];
+
+    buffer[out] = 0;
+
+
+    out = (out + 1) % size;
+    count --;
+
+    pthread_mutex_unlock(&lock);
+
     return true;
 }
 
@@ -40,23 +77,23 @@ int Buffer::get_size() {
 }
 
 int Buffer::get_count() {
-    return buffer.size();
+    return count;
 }
 
 bool Buffer::is_empty() {
-    return buffer.empty();
+    return count == 0 ;
 }
 
 bool Buffer::is_full() {
-    return buffer.size() == size;
+    return count == size;
 }
 
 void Buffer::print_buffer() {
     cout << "Buffer: [";
-    for (size_t i = 0; i < buffer.size(); i++) {
-        cout << buffer[i];
-        if (i != buffer.size() - 1) {
-            cout << ", ";
+    for (size_t i = 0; i < get_size(); i++) {
+
+        if ( buffer[i] != 0){
+            cout << buffer[i]<< ", ";
         }
     }
     cout << "]" << endl;
