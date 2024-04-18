@@ -22,12 +22,14 @@ void *producer(void *param) {
     // Each producer insert its own ID into the buffer
     // For example, thread 1 will insert 1, thread 2 will insert 2, and so on.
 
+    buffer_item item = *((int *) param);
+
+
     while (true) {
 
         /* sleep for a random period of time */
         usleep(rand()%1000000);
 
-        buffer_item item = *((int *) param);
         // TODO: Add synchronization code here
 //        Decrements wait semaphore by one ; has to wait if no empty slots exist
 
@@ -87,34 +89,32 @@ int main(int argc, char *argv[]) {
     int num_consumers = atoi(argv[3]);
 
 
+
     vector<pthread_t> producer_threads(num_producers);
     vector<pthread_t> consumer_threads(num_consumers);
-
     std::vector<int> producerIds(num_producers);
     std::vector<int> consumerIds(num_consumers);
 
-
-
     srand(time(NULL));
 
-    for (int i = 1; i <= num_producers; i++) {
+    for (int i = 0; i < num_producers; i++) {
         producerIds[i] = i + 1;
         pthread_create(&producer_threads[i], NULL, producer, (void*)&producerIds[i]);
     }
-//
-////    Cretion of the consumer threads
-    for (int i = 1; i <= num_consumers; i++) {
+    for (int i = 0; i < num_consumers; i++) {
         consumerIds[i] = i + 1;
         pthread_create(&consumer_threads[i], NULL, consumer,(void*)&consumerIds[i]);
 
     }
 
-    for (int i = 1; i <= num_producers; i++) {
-        pthread_join(producer_threads[i],NULL);
+
+    sleep(sleep_time);
+    for (int i = 0; i < num_producers; i++) {
+        pthread_detach(producer_threads[i]);
     }
 
-    for (int i = 1; i <= num_consumers; i++) {
-        pthread_join(consumer_threads[i],NULL);
+    for (int i = 0; i < num_consumers; i++) {
+        pthread_detach(consumer_threads[i]);
     }
 
     delete buffer;

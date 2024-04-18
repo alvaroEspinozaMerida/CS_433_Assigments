@@ -13,6 +13,8 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <iostream>
+#include <fcntl.h>
+
 
 // Define the data type of the buffer items
 typedef int buffer_item;

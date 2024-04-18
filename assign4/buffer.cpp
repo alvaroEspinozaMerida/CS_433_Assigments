@@ -32,7 +32,7 @@ bool Buffer::insert_item(buffer_item item) {
 
     pthread_mutex_lock(&lock);
 
-    if(count == size - 1){
+    if(count == size ){
         pthread_mutex_unlock(&lock);
         return false;
     }
@@ -42,7 +42,6 @@ bool Buffer::insert_item(buffer_item item) {
     in = (in + 1) % size;
 
     count ++;
-
 
     pthread_mutex_unlock(&lock);
 
@@ -90,11 +89,21 @@ bool Buffer::is_full() {
 
 void Buffer::print_buffer() {
     cout << "Buffer: [";
-    for (size_t i = 0; i < get_size(); i++) {
+    int nonZeroCount = 0;
 
-        if ( buffer[i] != 0){
-            cout << buffer[i]<< ", ";
+    for (size_t i = 0; i < size; ++i) {
+
+        if (buffer[i] != 0 ){
+
+            if (nonZeroCount > 0) {
+                cout << ", ";
+            }
+            cout << buffer[i];
+            nonZeroCount++;
         }
+
     }
     cout << "]" << endl;
+
+
 }
