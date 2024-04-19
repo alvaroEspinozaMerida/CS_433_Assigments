@@ -11,6 +11,7 @@
 #include "buffer.h"
 #include <unistd.h>
 #include <thread>
+#include <pthread.h>
 
 using namespace std;
 
@@ -64,26 +65,22 @@ int main(int argc, char *argv[]) {
     int num_producers = atoi(argv[2]);
     int num_consumers = atoi(argv[3]);
 
-    vector<thread> producer_threads;
-    vector<thread> consumer_threads;
+    vector<pthread_t> producer_threads;
+    vector<pthread_t> consumer_threads;
 
     srand(time(NULL));
 
     for (int i = 1; i <= num_producers; i++) {
-        producer_threads.emplace_back(producer, &i);
+        pthread_t tid;
+        pthread_create(&tid, nullptr, producer, reinterpret_cast<void *>(&i));
+        producer_threads.push_back(tid);
     }
 
     for (int i = 1; i <= num_consumers; i++) {
-        consumer_threads.emplace_back(consumer, nullptr);
+        pthread_t tid;
+        pthread_create(&tid, nullptr, consumer, nullptr);
+        consumer_threads.push_back(tid);
     }
 
     sleep(sleep_time);
-
-    for (int i = 0; i < producer_threads.size(); i++) {
-        producer_threads[i].detach();
-    }
-
-    for(int i = 0; i < consumer_threads.size(); i++) {
-        consumer_threads[i].detach();
-    }
 }
