@@ -42,48 +42,52 @@ public:
      * @param size the size of the buffer
      */
 
-    //Purpose: The mutex lock ensures that only one process
-    // (either a producer or a consumer) can access the buffer
-    // at any one time. This is critical to prevent data corruption
-    // or inconsistent state within the buffer.
+    //Mutex is in charge of making sure that only one thread is accessing the shared
+    //buffer resource at a time ; whenever a thread is accesing the critical area
+    // irregardless of removal or insertion ; whenever one of these
+    //actions is taking place the buffer should not be accessed by any other process
+    //so the mutex locks at the start of the insertion/deletion and unlocks at the end
 
-    //Function: When a process (either producer or consumer) wants
-    // to access the buffer, it must first acquire the mutex lock.
-    // If the lock is already held by another process, the requesting
-    // process must wait until the lock becomes available.
-    // Once the process is done with the buffer, it releases
-    // the mutex lock, allowing another process to access the buffer.
     pthread_mutex_t lock;
 
 
-    //Purpose: This semaphore tracks the number of empty slots available
-    // in the buffer. It helps manage how many items a producer can
-    // add to the buffer before it becomes full.
+    //SEMAPHORES: Purpose is to make sure the threads have items to cosume
+    // and enough room to produce new items
+    //
 
-    //Function: Initially, the "empty" semaphore is set to the total
-    // capacity of the buffer (i.e., all slots are empty).
-    // When a producer wants to add an item to the buffer,
-    // it must wait on the "empty" semaphore (which is decremented).
-    // If the semaphore's value is zero, the producer must wait because
-    // the buffer is full. Each time an item is consumed (removed from the buffer),
-    // the semaphore is incremented, signaling that an empty slot is available.
+
+    //Full semaphore keeps track of how many bufferitems are in the buffer
+    // have been produced inital value is whenever a new bufferitem
+    // gets created by a producer thread; the semaphore
+    //post that this new item has been created by iterating the semaphore by one
+    // the consumer also use this semaphore to make sure that their are items to
+    // to consume ; this semaphore prevents the cosumer from consuming items if the
+    // the semaphore is at 0
     sem_t *full;
 
-    //Purpose: This semaphore indicates the number of items currently
-    // in the buffer that are available for consumption. It prevents a
-    // consumer from trying to retrieve an item from an empty buffer.
+    //Empty semaphore keeps track of how many empty slots their are in the buffer
+    //the initial value is the size passed into the constructor of the buffer;
+    //whenever a new item gets added to the buffer the semaphore gets decremented by 1
+    //however if the semaphore is already at 0 then the producer must wait for the semaphore to go back to 1
+    //whenever a consumer consumes a buffer item
+    // the semaphore post that a new slot is available by increment up by 1
 
-    //Function: Initially, the "full" semaphore is set to zero because
-    // the buffer is empty. When a producer adds an item to the buffer,
-    // it increments the "full" semaphore. A consumer must wait on this
-    // semaphore before it can remove an item; if the semaphore's value is zero,
-    // the consumer must wait because there are no items to consume. Each time
-    // an item is consumed, the semaphore is decremented.
     sem_t *empty;
 
-
+    /**
+     * Buffer(int)- contstucts the buffer object
+     * cleans up any previous uses of the named semaphores by unlinking
+     * intializes the mutex so it can be used by the buffer
+     * sets variables for in, out, count that makes sure placement of items is crrect at start
+     * count is how many items are currently in the buffer
+     *
+     * semaphores get created full is 0 for how many items are in the buffer
+     * empty is set to size to represent how many empty slots are in the buffer
+     * */
     Buffer(int size = 5) : size(size) {
-
+        //semaphore clean up from previous run just in case destrcuotor does not work
+        //function is used specifically for named semaphores.
+        // removes a named semaphore from the system, effectively deleting its name so that it can no longer be opened.
         sem_unlink("/full");
         sem_unlink("/empty");
 
@@ -150,5 +154,11 @@ public:
      * @brief Print the buffer
      */
     void print_buffer();
+
+    Buffer& operator=(Buffer other);
+
+    Buffer(const Buffer& other);
+
+
 };
 #endif //ASSIGN4_BUFFER_H
