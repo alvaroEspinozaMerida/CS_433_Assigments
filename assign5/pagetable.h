@@ -42,7 +42,10 @@ class PageTable
 private:
     // A page table is like an array of page entries.
     vector<PageEntry> pages;
+
 public:
+
+    static int frameCounter;
     // Constructor
     PageTable(int num_pages);
     // Destructor

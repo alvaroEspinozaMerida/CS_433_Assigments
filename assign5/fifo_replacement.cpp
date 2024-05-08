@@ -38,12 +38,15 @@ int FIFOReplacement::replace_page(int page_num) {
 PageEntry FIFOReplacement ::getPageEntry(int page_num) {
 
 
+    return  page_table[page_num];
 }
 
 bool FIFOReplacement::access_page(int page_num, int is_write) {
 
     if( page_table[page_num].valid == 0){
         page_table[page_num].valid = 1;
+        page_table[page_num].frame_num = page_table.frameCounter;
+        page_table.frameCounter += 1;
         return false;
     }
 
