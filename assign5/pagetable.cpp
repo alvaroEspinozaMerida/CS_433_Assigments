@@ -14,7 +14,10 @@
 // Constrcutor
 // TODO: Add your code
 PageTable::PageTable(int num_pages) {
-    
+    pages = vector<PageEntry>(num_pages);
+    for(int i = 0 ; i < num_pages;i++){
+        pages.push_back(PageEntry());
+    }
 }
 
 // Destructor

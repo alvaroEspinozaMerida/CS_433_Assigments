@@ -14,7 +14,7 @@
 FIFOReplacement::FIFOReplacement(int num_pages, int num_frames)
 : Replacement(num_pages, num_frames)
 {
-    // TODO: Add additional implementation code
+    PageTable table(num_pages);
 }
 
 // TODO: Add your implementations for desctructor, load_page, replace_page here
@@ -25,10 +25,27 @@ FIFOReplacement::~FIFOReplacement() {
 // Access an invalid page, but free frames are available
 void FIFOReplacement::load_page(int page_num) {
     // TODO: Update your data structure FIFO replacement and pagetable
+
 }
 
 // Access an invalid page and no free frames are available
 int FIFOReplacement::replace_page(int page_num) {
     // TODO: Update your data structure FIFO replacement and pagetable
     return 0;
+}
+
+
+PageEntry FIFOReplacement ::getPageEntry(int page_num) {
+
+
+}
+
+bool FIFOReplacement::access_page(int page_num, int is_write) {
+
+    if( page_table[page_num].valid == 0){
+        page_table[page_num].valid = 1;
+        return false;
+    }
+
+    return true;
 }

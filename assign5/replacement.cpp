@@ -16,7 +16,7 @@
 Replacement::Replacement(int num_pages, int num_frames)
 : page_table(num_pages)
 {
-	//TODO: Add your implementation here
+
 }
 
 // Destructor

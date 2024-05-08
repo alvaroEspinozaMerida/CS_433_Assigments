@@ -37,6 +37,7 @@ int main(int argc, char *argv[]) {
 
     // Page size and Physical memory size
     // Their values should be read from command-line arguments, and always a power of 2
+    //Ex: 1024 bytes
     unsigned int page_size = atoi(argv[1]);
     if (!isPowerOfTwo(page_size)) {
         std::cout << "You have entered an invalid parameter for page size (bytes)" << std::endl
@@ -44,6 +45,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     unsigned int phys_mem_size = atoi(argv[2]) << 20; // convert from MB to bytes
+    //Ex: 32 MB of physical memory
     if (!isPowerOfTwo(phys_mem_size)) {
         std::cout << "You have entered an invalid parameter for physical memory size (MB)" << std::endl
                   << "  (must be an even integer between 4 and 64, inclusive)." << std::endl;
