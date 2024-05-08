@@ -14,7 +14,7 @@
 // Constrcutor
 // TODO: Add your code
 PageTable::PageTable(int num_pages) {
-    
+    page.resize(num_pages);
 }
 
 // Destructor

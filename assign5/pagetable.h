@@ -50,6 +50,12 @@ public:
 
 	// TODO: Add your implementation of the page table here
 
+    PageEntry& getPageEntry(int index);
+    void setPageEntry(int index, const PageEntry& entry);
+
+    int getSize() const;
+
+    void initialize();
     /**
      * @brief Access a page in the page table.
      * @param i

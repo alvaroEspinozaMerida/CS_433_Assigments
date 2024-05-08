@@ -27,15 +27,19 @@ LRUReplacement::~LRUReplacement()
 void LRUReplacement::touch_page(int page_num)
 {
     // TODO: Update your data structure LRU replacement
+    std::cout << "Page " << page_num << " was touched (LRU)" << std::endl;
 }
 
 // Access an invalid page, but free frames are available
 void LRUReplacement::load_page(int page_num) {
     // TODO: Update your data structure LRU replacement and pagetable
+    std::cout << "Page " << page_num << " was loaded (LRU)" << std::endl;
 }
 
 // Access an invalid page and no free frames are available
 int LRUReplacement::replace_page(int page_num) {
     // TODO: Update your data structure LRU replacement and pagetable
-    return 0;
+    //int victim_page_num = ;
+    std::cout << "Page " << victim_page_num << " was replaced (LRU)" << std::endl;
+    return victim_page_num;
 }
