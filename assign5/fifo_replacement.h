@@ -13,13 +13,12 @@
 // Remember to add comments to your code
 
 #include "replacement.h"
-
+#include <iostream>
 /**
  * @brief A class to simulate FIFO page replacement algorithm.
  */
 class FIFOReplacement : public Replacement {
 private:
-    // TODO: Add necessary member variables to this class
 
 public:
     /**
@@ -54,6 +53,8 @@ public:
 
 
     virtual PageEntry getPageEntry(int page_num);
+
+    virtual void print_statistics();
 
 
 };

@@ -12,6 +12,7 @@
 
 // Remember to add comments to your code
 #include <vector>
+
 using namespace std;
 
 // A page table entry
@@ -44,8 +45,6 @@ private:
     vector<PageEntry> pages;
 
 public:
-
-    static int frameCounter;
     // Constructor
     PageTable(int num_pages);
     // Destructor

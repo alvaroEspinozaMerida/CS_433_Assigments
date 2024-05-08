@@ -16,6 +16,8 @@
 Replacement::Replacement(int num_pages, int num_frames)
 : page_table(num_pages)
 {
+    this->num_pages = num_pages;
+    this->num_frames = num_frames;
 
 }
 
@@ -33,6 +35,9 @@ bool Replacement::access_page(int page_num, bool is_write)
     // If the page is valid, it calls the touch_page function. 
     // If the page is not valid but free frames are available, it calls the load_page function.
     // If the page is not valid and there is no free frame, it calls the replace_page function.
+
+
+
     return false;
 }
 
