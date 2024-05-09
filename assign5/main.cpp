@@ -98,9 +98,10 @@ int main(int argc, char *argv[]) {
     // Test 2: Read and simulate the large list of logical addresses from the input file "large_refs.txt"
     std::cout << "\n================================Test 2==================================================\n";
 
-    std::cout << "****************Simulate FIFO replacement****************************" << std::endl;
+    std::cout << "\n****************Simulate FIFO replacement****************************" << std::endl;
     // TODO: Add your code to calculate number of page faults using FIFO replacement algorithm
     // TODO: print the statistics and run-time
+
 
     std::ifstream in2;
     // Open the samll reference file
@@ -109,6 +110,7 @@ int main(int argc, char *argv[]) {
         std::cerr << "Cannot open small_refs.txt to read. Please check your path." << std::endl;
         return 1;
     }
+
     int val2;
     // Create a vector to store the logical addresses
     std::vector<int> large_refs;
@@ -116,8 +118,11 @@ int main(int argc, char *argv[]) {
         large_refs.push_back(val2);
     }
 
-
     FIFOReplacement lm(num_pages, num_frames);
+
+//    cout<<"Frame Size arg:"<<num_frames<<endl;
+//    cout<<"Page Size arg:"<<num_pages<<endl;
+
     for (std::vector<int>::const_iterator it = large_refs.begin(); it != large_refs.end(); ++it) {
         int page_num = (*it) >> page_offset_bits;
         bool isPageFault = lm.access_page(page_num, 0);
@@ -130,9 +135,20 @@ int main(int argc, char *argv[]) {
 
 
 
-    std::cout << "****************Simulate LIFO replacement****************************" << std::endl;
-    // TODO: Add your code to calculate number of page faults using LIFO replacement algorithm
-    // TODO: print the statistics and run-time
+    std::cout << "\n****************Simulate LIFO replacement****************************" << std::endl;
+    LIFOReplacement rm(num_pages, num_frames);
+
+    for (std::vector<int>::const_iterator it = large_refs.begin(); it != large_refs.end(); ++it) {
+        int page_num = (*it) >> page_offset_bits;
+        bool isPageFault = rm.access_page(page_num, 0);
+        PageEntry pg = rm.getPageEntry(page_num);
+//        std::cout << "Logical address: " << *it << ", \tpage number: " << page_num;
+//        std::cout << ", \tframe number = " << pg.frame_num << ", \tis page fault? " << isPageFault << std::endl;
+    }
+    rm.print_statistics();
+
+
+
 
     std::cout << "****************Simulate LRU replacement****************************" << std::endl;
     // TODO: Add your code to calculate number of page faults using LRU replacement algorithm

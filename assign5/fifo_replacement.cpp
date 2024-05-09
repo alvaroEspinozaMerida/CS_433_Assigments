@@ -26,7 +26,7 @@ FIFOReplacement::~FIFOReplacement() {
 void FIFOReplacement::load_page(int page_num) {
     //load in the page number into the physical memory and then also keep track of it inside of the
     //of the age queue
-    ageQueue.push(page_num);
+    ageQueue.push_back(page_num);
     frames.push_back(page_num);
     pageFrameMap[page_num] = frames.size() - 1;
 
@@ -41,9 +41,12 @@ int FIFOReplacement::replace_page(int page_num) {
 //    find the oldest page number in the age queue ie the
 //the page number at the start of the queue
 
+//    cout<<"\nPage Number to be added:"<<page_num<<endl;
+
     int oldestPage = ageQueue.front();
+//    cout<<"Oldes Number to be remove:"<<oldestPage<<endl;
 //    Get rid of the oldest page so it is no longer in the age queue
-    ageQueue.pop();
+    ageQueue.pop_front();
 //  Get the index position in the pMemory of the oldest page in the queue
     int oldPagePos = pageFrameMap[oldestPage];
     frames[oldPagePos] = page_num;
@@ -60,52 +63,51 @@ int FIFOReplacement::replace_page(int page_num) {
 //update this pages frame number to be the frame number of the old page
 
     page_table[page_num].valid = true;
-    page_table[oldestPage].frame_num = oldPagePos;
+    page_table[page_num].frame_num = oldPagePos;
 //    remove the old page map because this page is no longer in physical memory
 //and needs to have the value that represented its location in physical memory removed
 
     pageFrameMap.erase(oldestPage);
+    pageFrameMap[page_num] = oldPagePos;
+
+    ageQueue.push_back(page_num);
 
     return oldPagePos;
 }
 void FIFOReplacement ::print_statistics() {
-   cout<<"Number of references:     "<< referenceCounter;
+   cout<<"\nNumber of references:     "<< referenceCounter;
    cout<<"\nNumber of page faults:    "<<numFaults;
-   cout<<"\nNumber of page replacements:  "<< numReplacements;
+   cout<<"\nNumber of page replacements:  "<< numReplacements<<endl;
 }
 
 PageEntry FIFOReplacement ::getPageEntry(int page_num) {
 
-
     return  page_table[page_num];
 }
 
-bool FIFOReplacement::access_page(int page_num, int is_write) {
+bool FIFOReplacement::access_page(int page_num, bool is_write) {
 
     referenceCounter +=1;
+
 
 //    Page Fault occurs here since page is not valid meaning it has not been loaded into physical memory
     if( !page_table[page_num].valid){
 
-
-//  check if frames are available and call the load_page function
-
-    if(frames.size() < num_frames){
-        load_page(page_num);
-    }
-    else{
-        numReplacements +=1;
-        replace_page(page_num);
-    }
-// TODO:UPDATE since this will now be done in respective methods
-//        Page Entry is set to valid to reperesent that the page number is now loaded into the
-
+    //  check if frames are available and call the load_page function
+    //if the size of the number of frames in physical memory is less then the number of freams we load in pages
+        if(frames.size() < this->num_frames){
+            load_page(page_num);
+        }
+    //    represents not enough frames to place the page num into
+    //if the size of the number of items in the physical memory is greeter then max number of frames we replace
+        else {
+    //        cout<<"Replace!"<<endl;
+            numReplacements +=1;
+            replace_page(page_num);
+        }
         numFaults += 1;
-
         return true;
     }
-
-
 
 
     return false;

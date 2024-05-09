@@ -13,6 +13,8 @@
 // Remember to add comments to your code
 
 #include "replacement.h"
+#include <iostream>
+
 
 /**
  * @brief A class to simulate LIFO (last in first out) page replacement algorithm.
@@ -48,5 +50,14 @@ public:
      * @return Selected victim page #
      */
     virtual int replace_page(int page_num);
+
+
+    virtual bool access_page(int page_num, bool is_write);
+
+
+    virtual PageEntry getPageEntry(int page_num);
+
+    virtual void print_statistics();
+
 
 };

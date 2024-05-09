@@ -27,6 +27,7 @@ class PageEntry
 public:
 	// Physical frame number for a given page
 	int frame_num;
+//    false at the start
 	// valid bit represents whether a page is in the physical memory
 	bool valid = false;
     // dirty bit represents whether a page is changed

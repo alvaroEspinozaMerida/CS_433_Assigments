@@ -19,6 +19,8 @@ Replacement::Replacement(int num_pages, int num_frames)
     this->num_pages = num_pages;
     this->num_frames = num_frames;
 
+    cout<<"Size of the age queue at start :"<< this->ageQueue.size()<<endl;
+
 }
 
 // Destructor

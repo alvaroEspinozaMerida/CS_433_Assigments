@@ -36,7 +36,7 @@ protected:      // subclasses can access these members
 
     //represents the order in which page entries were added into physical memory
     //int represents the page number
-    std::queue<int> ageQueue;
+    std::deque<int> ageQueue;
     //represents the physical memory size is limited to the num_frames variable
     std::vector<int> frames;
 

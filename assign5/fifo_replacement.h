@@ -49,7 +49,7 @@ public:
     virtual int replace_page(int page_num);
 
 
-    virtual bool access_page(int page_num, int is_write);
+    virtual bool access_page(int page_num, bool is_write);
 
 
     virtual PageEntry getPageEntry(int page_num);
