@@ -12,6 +12,7 @@
 
 // Remember to add comments to your code
 #include <vector>
+
 using namespace std;
 
 // A page table entry
@@ -33,7 +34,7 @@ public:
 };
 
 
-/**
+/**Pag
  * @brief A page table is like an array of page entries.
  * The size of the page table should equal to the number of pages in logical memory
  */
@@ -42,6 +43,7 @@ class PageTable
 private:
     // A page table is like an array of page entries.
     vector<PageEntry> pages;
+
 public:
     // Constructor
     PageTable(int num_pages);
@@ -50,12 +52,6 @@ public:
 
 	// TODO: Add your implementation of the page table here
 
-    PageEntry& getPageEntry(int index);
-    void setPageEntry(int index, const PageEntry& entry);
-
-    int getSize() const;
-
-    void initialize();
     /**
      * @brief Access a page in the page table.
      * @param i

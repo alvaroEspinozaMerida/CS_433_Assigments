@@ -17,12 +17,14 @@ using namespace std;
 
 // global buffer object
 Buffer *buffer = new Buffer();
+
+
 // Producer thread function
-// TODO: Add your implementation of the producer thread here
 void *producer(void *param) {
     // Each producer insert its own ID into the buffer
     // For example, thread 1 will insert 1, thread 2 will insert 2, and so on.
 
+    //id needs to be a uniruq VALUE that is not shared with other threads
     buffer_item item = *((int *) param);
 
 
@@ -31,7 +33,6 @@ void *producer(void *param) {
         /* sleep for a random period of time */
         usleep(rand()%1000000);
 
-        // TODO: Add synchronization code here
 //        Decrements wait semaphore by one ; has to wait if no empty slots exist
 
         sem_wait(buffer->empty);
@@ -42,25 +43,23 @@ void *producer(void *param) {
         } else {
             cout << "Producer error condition"  << endl;    // shouldn't come here
         }
-
+//        increments the buffer full item by one to tell other threads that new item is ready to be consumed
         sem_post(buffer->full);
 
     }
 }
 
 // Consumer thread function
-// TODO: Add your implementation of the consumer thread here
 void *consumer(void *param) {
 
    while (true) {
         /* sleep for a random period of time */
        usleep(rand() % 1000000);
 
-//     decrements full by 1 if there are values inside of full semaphore ; waits if not
 
        buffer_item item;
-        // TODO: Add synchronization code here
-
+//     decrements full by 1 if there are values inside of full semaphore ; waits if no items are
+//     available to be consumed
        sem_wait(buffer->full);
 
         if (buffer->remove_item(&item)) {
@@ -70,7 +69,8 @@ void *consumer(void *param) {
             cout << "Consumer error condition" << endl;    // shouldn't come here
         }
 
-//        Increament empty by 1
+//      increments the empty sempahore by 1 to indicate to other threads that their is now
+//      more room to add in new bufferitems
 
        sem_post(buffer->empty);
 
@@ -90,6 +90,7 @@ int main(int argc, char *argv[]) {
     int num_consumers = atoi(argv[3]);
 
 
+
     vector<pthread_t> producer_threads(num_producers);
     vector<pthread_t> consumer_threads(num_consumers);
     std::vector<int> producerIds(num_producers);
@@ -107,8 +108,9 @@ int main(int argc, char *argv[]) {
 
     }
 
-
+    //close program after set amount of time
     sleep(sleep_time);
+    //detaches the thread to clean up threads
     for (int i = 0; i < num_producers; i++) {
         pthread_detach(producer_threads[i]);
     }
@@ -117,5 +119,6 @@ int main(int argc, char *argv[]) {
         pthread_detach(consumer_threads[i]);
     }
 
+    //buffer deletion to prevent memory leaks
     delete buffer;
 }

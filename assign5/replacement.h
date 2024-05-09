@@ -12,6 +12,9 @@
 #include "pagetable.h"
 
 
+#include <queue>
+#include <unordered_map>
+
 /**
  * @brief A base class to simulate page replacement algorithms.
  * A specific page replacement algorithm, e.g. FIFO or LRU, should be subclass of this.
@@ -22,6 +25,25 @@ protected:      // subclasses can access these members
     // Member variable for the page table
     PageTable page_table;
 	// TODO: Add additional member variables to this class
+    int num_pages;
+    int num_frames;
+
+
+    int frameCounter = 0;
+    int referenceCounter =0;
+    int numFaults = 0;
+    int numReplacements = 0;
+
+    //represents the order in which page entries were added into physical memory
+    //int represents the page number
+    std::queue<int> ageQueue;
+    //represents the physical memory size is limited to the num_frames variable
+    std::vector<int> frames;
+
+//    Will link the page_numbers stored in the physical memory to a
+// element index  that represent their location in the physical memory array
+    std::unordered_map<int, int> pageFrameMap;
+
 	
 public:
 	/**
