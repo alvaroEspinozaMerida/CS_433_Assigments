@@ -24,8 +24,8 @@ FIFOReplacement::~FIFOReplacement() {
 
 // Access an invalid page, but free frames are available
 void FIFOReplacement::load_page(int page_num) {
-    //load in the page number into the physical memory and then also keep track of it inside of the
-    //of the age queue
+    //load in the page number into the physical memory and then also keep track of it inside the
+    //age queue
     ageQueue.push(page_num);
     frames.push_back(page_num);
     pageFrameMap[page_num] = frames.size() - 1;
@@ -39,11 +39,11 @@ void FIFOReplacement::load_page(int page_num) {
 int FIFOReplacement::replace_page(int page_num) {
 
 
-//    find the oldest page number in the age queue ie the
+//    find the oldest page number in the age queue ie
 //the page number at the start of the queue
 
     int oldestPage = ageQueue.front();
-//    Get rid of the oldest page so it is no longer in the age queue
+//    Get rid of the oldest page, so it is no longer in the age queue
     ageQueue.pop();
 //  Get the index position in the pMemory of the oldest page in the queue
     int oldPagePos = pageFrameMap[oldestPage];
@@ -56,7 +56,7 @@ int FIFOReplacement::replace_page(int page_num) {
     page_table[oldestPage].valid = false;
     page_table[oldestPage].frame_num = -1;
 
-//    update the the newly added page in the table to now be valid
+//    update the newly added page in the table to now be valid
 //so that no page faults can occur any more
 //update this pages frame number to be the frame number of the old page
 
