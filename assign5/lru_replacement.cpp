@@ -28,7 +28,7 @@ void LRUReplacement::touch_page(int page_num)
 {
     // TODO: Update your data structure LRU replacement
     if (pageFrameMap.find(page_num) != pageFrameMap.end()) {
-        // Page is already in physical memory, move it to the front of the list
+
         int frame_num = pageFrameMap[page_num];
         ageQueue.erase(frames[frame_num].iterator);
         ageQueue.push_front(page_num);
@@ -45,7 +45,6 @@ void LRUReplacement::load_page(int page_num) {
         page_table[page_num].frame_num = frame_num;
         page_table[page_num].valid = true;
 
-        // Add the page to the front of the access queue
         ageQueue.push_front(page_num);
         frames[frame_num].iterator = ageQueue.begin();
         pageFrameMap[page_num] = frame_num;
@@ -56,16 +55,13 @@ void LRUReplacement::load_page(int page_num) {
 // Access an invalid page and no free frames are available
 int LRUReplacement::replace_page(int page_num) {
     // TODO: Update your data structure LRU replacement and pagetable
-    //int victim_page_num = ;
     int victim_page_num = ageQueue.back();
     ageQueue.pop_back();
 
-    // Update the data structure to reflect the access time of the page
     int victim_frame_num = pageFrameMap[victim_page_num];
     page_table[victim_page_num].valid = false;
     pageFrameMap.erase(victim_page_num);
 
-    // Load the new page into the frame previously occupied by the victim
     page_table[page_num].frame_num = victim_frame_num;
     page_table[page_num].valid = true;
     ageQueue.push_front(page_num);
