@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include <cmath>
 #include <vector>
+#include <chrono>
+
 
 #include "fifo_replacement.h"
 #include "lru_replacement.h"
@@ -122,6 +124,7 @@ int main(int argc, char *argv[]) {
 
 //    cout<<"Frame Size arg:"<<num_frames<<endl;
 //    cout<<"Page Size arg:"<<num_pages<<endl;
+    auto t1 = std::chrono::high_resolution_clock::now();
 
     for (std::vector<int>::const_iterator it = large_refs.begin(); it != large_refs.end(); ++it) {
         int page_num = (*it) >> page_offset_bits;
@@ -130,13 +133,19 @@ int main(int argc, char *argv[]) {
 //        std::cout << "Logical address: " << *it << ", \tpage number: " << page_num;
 //        std::cout << ", \tframe number = " << pg.frame_num << ", \tis page fault? " << isPageFault << std::endl;
     }
+
+    auto t2 = std::chrono::high_resolution_clock::now();
+
     in2.close();
     lm.print_statistics();
+    std::chrono::duration<double> runtime = std::chrono::duration_cast<std::chrono::duration<double> >(t2 - t1);
+    std::cout << "Time taken: " << runtime.count() << " seconds" << std::endl;
 
 
 
     std::cout << "\n****************Simulate LIFO replacement****************************" << std::endl;
     LIFOReplacement rm(num_pages, num_frames);
+    auto t3 = std::chrono::high_resolution_clock::now();
 
     for (std::vector<int>::const_iterator it = large_refs.begin(); it != large_refs.end(); ++it) {
         int page_num = (*it) >> page_offset_bits;
@@ -145,8 +154,11 @@ int main(int argc, char *argv[]) {
 //        std::cout << "Logical address: " << *it << ", \tpage number: " << page_num;
 //        std::cout << ", \tframe number = " << pg.frame_num << ", \tis page fault? " << isPageFault << std::endl;
     }
-    rm.print_statistics();
+    auto t4 = std::chrono::high_resolution_clock::now();
 
+    rm.print_statistics();
+    std::chrono::duration<double> runtime2 = std::chrono::duration_cast<std::chrono::duration<double> >(t4 - t3);
+    std::cout << "Time taken: " << runtime2.count() << " seconds" << std::endl;
 
 
 
