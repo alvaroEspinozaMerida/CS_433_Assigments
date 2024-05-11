@@ -20,8 +20,8 @@ int main(int argc, char *argv[]) {
     //Print basic information about the program
     std::cout << "=================================================================" << std::endl;
     std::cout << "CS 433 Programming assignment 5" << std::endl;
-    std::cout << "Author: xxxxxx and xxxxxxx" << std::endl;
-    std::cout << "Date: xx/xx/20xx" << std::endl;
+    std::cout << "Author: Alvaro Espinoza Merida and Rutilo Maciel" << std::endl;
+    std::cout << "Date: 05/10/2024" << std::endl;
     std::cout << "Course: CS433 (Operating Systems)" << std::endl;
     std::cout << "Description : Program to simulate different page replacement algorithms" << std::endl;
     std::cout << "=================================================================\n" << std::endl;
@@ -99,8 +99,6 @@ int main(int argc, char *argv[]) {
     std::cout << "\n================================Test 2==================================================\n";
 
     std::cout << "\n****************Simulate FIFO replacement****************************" << std::endl;
-    // TODO: Add your code to calculate number of page faults using FIFO replacement algorithm
-    // TODO: print the statistics and run-time
 
 
     std::ifstream in2;
@@ -130,13 +128,20 @@ int main(int argc, char *argv[]) {
 //        std::cout << "Logical address: " << *it << ", \tpage number: " << page_num;
 //        std::cout << ", \tframe number = " << pg.frame_num << ", \tis page fault? " << isPageFault << std::endl;
     }
+
+    auto t2 = std::chrono::high_resolution_clock::now();
+
     in2.close();
     lm.print_statistics();
+    std::chrono::duration<double> runtime = std::chrono::duration_cast<std::chrono::duration<double> >(t2 - t1);
+    std::cout << "Time taken: " << runtime.count() << " seconds" << std::endl;
+
 
 
 
     std::cout << "\n****************Simulate LIFO replacement****************************" << std::endl;
     LIFOReplacement rm(num_pages, num_frames);
+    auto t3 = std::chrono::high_resolution_clock::now();
 
     for (std::vector<int>::const_iterator it = large_refs.begin(); it != large_refs.end(); ++it) {
         int page_num = (*it) >> page_offset_bits;
@@ -145,13 +150,33 @@ int main(int argc, char *argv[]) {
 //        std::cout << "Logical address: " << *it << ", \tpage number: " << page_num;
 //        std::cout << ", \tframe number = " << pg.frame_num << ", \tis page fault? " << isPageFault << std::endl;
     }
+    auto t4 = std::chrono::high_resolution_clock::now();
+
     rm.print_statistics();
+
+    std::chrono::duration<double> runtime2 = std::chrono::duration_cast<std::chrono::duration<double> >(t4 - t3);
+    std::cout << "Time taken: " << runtime2.count() << " seconds" << std::endl;
 
 
 
 
     std::cout << "****************Simulate LRU replacement****************************" << std::endl;
-    // TODO: Add your code to calculate number of page faults using LRU replacement algorithm
-    // TODO: print the statistics and run-time
+
+    LRUReplacement lru(num_pages, num_frames);
+
+
+    for (std::vector<int>::const_iterator it = large_refs.begin(); it != large_refs.end(); ++it) {
+        int page_num = (*it) >> page_offset_bits;
+        bool isPageFault = lru.access_page(page_num, 0);
+        PageEntry pg = lru.getPageEntry(page_num);
+        // Uncomment below line if you want to print each step
+//         std::cout << "Logical address: " << *it << ", \tpage number: " << page_num
+//                   << ", \tframe number = " << pg.frame_num << ", \tis page fault? " << isPageFault << std::endl;
+    }
+    auto t4 = std::chrono::high_resolution_clock::now();
+
+    lru.print_statistics();
+    std::chrono::duration<double> runtime2 = std::chrono::duration_cast<std::chrono::duration<double> >(t4 - t3);
+    std::cout << "Time taken: " << runtime2.count() << " seconds" << std::endl;
 
 }
