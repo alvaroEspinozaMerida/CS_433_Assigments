@@ -31,8 +31,7 @@ Replacement::~Replacement()
 
 // Simulate a single page access 
 // @return true if it's a page fault
-bool Replacement::access_page(int page_num, bool is_write)
-{
+bool Replacement::access_page(int page_num, bool is_write) {
     // TODO: Add your implementation here
     // If the page is valid, it calls the touch_page function. 
     // If the page is not valid but free frames are available, it calls the load_page function.

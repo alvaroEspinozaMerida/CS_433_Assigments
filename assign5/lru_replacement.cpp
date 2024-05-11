@@ -27,15 +27,47 @@ LRUReplacement::~LRUReplacement()
 void LRUReplacement::touch_page(int page_num)
 {
     // TODO: Update your data structure LRU replacement
+    if (pageFrameMap.find(page_num) != pageFrameMap.end()) {
+
+        int frame_num = pageFrameMap[page_num];
+        ageQueue.erase(frames[frame_num].iterator);
+        ageQueue.push_front(page_num);
+        frames[frame_num].iterator = ageQueue.begin();
+    }
+    std::cout << "Page " << page_num << " was touched (LRU)" << std::endl;
 }
 
 // Access an invalid page, but free frames are available
 void LRUReplacement::load_page(int page_num) {
     // TODO: Update your data structure LRU replacement and pagetable
+    if (num_free_frames() > 0) {
+        int frame_num = allocate_frame(page_num);
+        page_table[page_num].frame_num = frame_num;
+        page_table[page_num].valid = true;
+
+        ageQueue.push_front(page_num);
+        frames[frame_num].iterator = ageQueue.begin();
+        pageFrameMap[page_num] = frame_num;
+    }
+    std::cout << "Page " << page_num << " was loaded (LRU)" << std::endl;
 }
 
 // Access an invalid page and no free frames are available
 int LRUReplacement::replace_page(int page_num) {
     // TODO: Update your data structure LRU replacement and pagetable
-    return 0;
+    int victim_page_num = ageQueue.back();
+    ageQueue.pop_back();
+
+    int victim_frame_num = pageFrameMap[victim_page_num];
+    page_table[victim_page_num].valid = false;
+    pageFrameMap.erase(victim_page_num);
+
+    page_table[page_num].frame_num = victim_frame_num;
+    page_table[page_num].valid = true;
+    ageQueue.push_front(page_num);
+    frames[victim_frame_num].iterator = ageQueue.begin();
+    pageFrameMap[page_num] = victim_frame_num;
+
+    std::cout << "Page " << victim_page_num << " was replaced (LRU)" << std::endl;
+    return victim_page_num;
 }

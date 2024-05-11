@@ -11,6 +11,7 @@
 #include "buffer.h"
 #include <unistd.h>
 #include <thread>
+#include <pthread.h>
 
 using namespace std;
 
@@ -89,10 +90,7 @@ int main(int argc, char *argv[]) {
     int num_consumers = atoi(argv[3]);
 
 
-    //thread creation
-    //each thread must have an id that it shares all by itself and has
-    //no chance of accessing a variable that is shared by other threads ;
-    //thread ids makes sure each thread has a unique variable and value for its id
+
     vector<pthread_t> producer_threads(num_producers);
     vector<pthread_t> consumer_threads(num_consumers);
     std::vector<int> producerIds(num_producers);
@@ -123,7 +121,4 @@ int main(int argc, char *argv[]) {
 
     //buffer deletion to prevent memory leaks
     delete buffer;
-
-
-
 }
