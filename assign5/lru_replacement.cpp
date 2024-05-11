@@ -26,14 +26,24 @@ LRUReplacement::~LRUReplacement()
 // Accesss a page alreay in physical memory
 void LRUReplacement::touch_page(int page_num)
 {
-    std::deque<int>::iterator it;
-    for (it = ageQueue.begin(); it != ageQueue.end(); it++) {
+//    std::deque<int>::iterator it;
+//    for (it = ageQueue.begin(); it != ageQueue.end(); it++) {
+//        if (*it == page_num) {
+//            ageQueue.erase(it);
+//            break;
+//        }
+//    }
+//    ageQueue.push_back(page_num);
+
+    for (auto it = ageQueue.begin(); it != ageQueue.end(); it++) {
         if (*it == page_num) {
             ageQueue.erase(it);
             break;
         }
     }
     ageQueue.push_back(page_num);
+
+
 //    std::cout << "Page " << page_num << " was touched (LRU)" << std::endl;
 }
 
@@ -87,19 +97,20 @@ PageEntry LRUReplacement::getPageEntry(int page_num) {
 
 bool LRUReplacement::access_page(int page_num, bool is_write) {
     // Access a page using the LRU algorithm and update statistics accordingly
-    referenceCounter += 1;
+    referenceCounter++;
 
     // Check if the page is not valid, indicating a page fault
     if (!page_table[page_num].valid) {
         // If there are available frames, load the page
-        if (frames.size() < this->num_frames) {
+//        if (frames.size() < this->num_frames) {
+        if (frames.size() < num_frames) {
             load_page(page_num);
         } else {
             // If there are no available frames, replace a page using LRU
-            numReplacements += 1;
+            numReplacements++;
             replace_page(page_num);
         }
-        numFaults += 1;
+        numFaults ++;
         return true;
     }
 
@@ -108,4 +119,5 @@ bool LRUReplacement::access_page(int page_num, bool is_write) {
     touch_page(page_num);
 
     return false;
+
 }

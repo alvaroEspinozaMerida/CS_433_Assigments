@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include <cmath>
 #include <vector>
+#include <chrono>
+
 
 #include "fifo_replacement.h"
 #include "lru_replacement.h"
@@ -120,6 +122,7 @@ int main(int argc, char *argv[]) {
 
 //    cout<<"Frame Size arg:"<<num_frames<<endl;
 //    cout<<"Page Size arg:"<<num_pages<<endl;
+    auto t1 = std::chrono::high_resolution_clock::now();
 
     for (std::vector<int>::const_iterator it = large_refs.begin(); it != large_refs.end(); ++it) {
         int page_num = (*it) >> page_offset_bits;
@@ -152,18 +155,17 @@ int main(int argc, char *argv[]) {
     }
     auto t4 = std::chrono::high_resolution_clock::now();
 
-    rm.print_statistics();
 
+    rm.print_statistics();
     std::chrono::duration<double> runtime2 = std::chrono::duration_cast<std::chrono::duration<double> >(t4 - t3);
     std::cout << "Time taken: " << runtime2.count() << " seconds" << std::endl;
-
 
 
 
     std::cout << "****************Simulate LRU replacement****************************" << std::endl;
 
     LRUReplacement lru(num_pages, num_frames);
-
+    auto t5 = std::chrono::high_resolution_clock::now();
 
     for (std::vector<int>::const_iterator it = large_refs.begin(); it != large_refs.end(); ++it) {
         int page_num = (*it) >> page_offset_bits;
@@ -173,10 +175,10 @@ int main(int argc, char *argv[]) {
 //         std::cout << "Logical address: " << *it << ", \tpage number: " << page_num
 //                   << ", \tframe number = " << pg.frame_num << ", \tis page fault? " << isPageFault << std::endl;
     }
-    auto t4 = std::chrono::high_resolution_clock::now();
+    auto t6 = std::chrono::high_resolution_clock::now();
 
     lru.print_statistics();
-    std::chrono::duration<double> runtime2 = std::chrono::duration_cast<std::chrono::duration<double> >(t4 - t3);
-    std::cout << "Time taken: " << runtime2.count() << " seconds" << std::endl;
+    std::chrono::duration<double> runtime3 = std::chrono::duration_cast<std::chrono::duration<double> >(t6 - t5);
+    std::cout << "Time taken: " << runtime3.count() << " seconds" << std::endl;
 
 }
